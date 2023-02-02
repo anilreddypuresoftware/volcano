@@ -41,7 +41,7 @@ jobs:
       - run: sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable"
       - run: apt-cache policy docker-ce
       - run: sudo apt install docker-ce
-      - run: docker -version
+      - run: docker --version
       - run: make TAG=latest images
       - run:
           command: |
