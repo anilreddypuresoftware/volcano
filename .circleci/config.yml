@@ -7,7 +7,7 @@ orbs:
 run:
 when: "branch =~ '.*' OR pull_request =~'.*'"  
 jobs:
-  manylinux2014-aarch64:
+  manylinux2014-aarch64: 
     parameters:
       cibw_build:
         type: string
