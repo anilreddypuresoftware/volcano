@@ -12,7 +12,7 @@ jobs:
       cibw_build:
         type: string
         default: "cp37-*"
-        sleep_250:
+       
        
     machine:
       image: ubuntu-2004:202101-01
@@ -54,8 +54,8 @@ jobs:
               build/sbt -Pvolcano -Pkubernetes -Pkubernetes-integration-tests -Dspark.kubernetes.test.driverRequestCores=0.5 -Dspark.kubernetes.test.executorRequestCores=0.2 -Dspark.kubernetes.test.volcanoMaxConcurrencyJobNum=1 -Dtest.include.tags=volcano "kubernetes-integration-tests/test"
          
          
- workflows:
-  version: 2.1
+workflows:
+ version: 2.1
   main:
     jobs:
       - manylinux2014-aarch64:
