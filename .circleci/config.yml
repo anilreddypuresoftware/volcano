@@ -22,7 +22,6 @@ jobs:
       - run: sudo apt-get update
       - run: wget https://go.dev/dl/go1.18.2.linux-arm64.tar.gz 
       - run: sudo tar -xvf go1.18.2.linux-arm64.tar.gz
-      - run: sudo mv go /usr/local
       - run: export GOPATH=$HOME/go
       - run: export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
       - run: source ~/.profile
