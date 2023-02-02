@@ -4,7 +4,7 @@ on:
   # Post check in below branches
   push:
     branches:
-      - master
+      - master 
   # PR triggered job
   pull_request:
 jobs:
