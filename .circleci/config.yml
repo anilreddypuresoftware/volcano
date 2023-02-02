@@ -1,0 +1,55 @@
+version: 2.1
+
+orbs: 
+  go: circleci/go@1.7.1
+  
+
+run:
+when: "branch =~ '.*' OR pull_request =~'.*'"  
+jobs:
+  manylinux2014-aarch64:
+    parameters:
+      cibw_build:
+        type: string
+        default: "cp37-*"
+        sleep_250:
+       
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - run: sudo apt-get update
+      - run: wget https://go.dev/dl/go1.18.2.linux-arm64.tar.gz 
+      - run: sudo tar -xvf go1.18.2.linux-arm64.tar.gz
+      - run: sudo mv go /usr/local
+      - run: export GOPATH=$HOME/go
+      - run: export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+      - run: source ~/.profile
+      - run: go version
+      - run: sudo apt-get install curl
+      - run: sudo apt-get install apt-transport-https
+      - run: wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-arm64
+      - run: sudo cp minikube-linux-amd64 /usr/local/bin/minikube
+      - run: sudo chmod 755 /usr/local/bin/minikube
+      - run: minikube version
+      - run: curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/arm64/kubectl
+      - run: chmod +x ./kubectl
+      - run: sudo mv ./kubectl /usr/local/bin/kubectl
+      - run: kubectl version -o json
+      - run: minikube start
+      - run: sudo apt install apt-transport-https ca-certificates curl software-properties-common
+      - run: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      - run: sudo add-apt-repository "deb [arch=arm64] https://download.docker.com/linux/ubuntu focal stable"
+      - run: apt-cache policy docker-ce
+      - run: sudo apt install docker-ce
+      - run: docker -version
+      - run: make TAG=latest images
+      - run:
+          command: |
+              git clone https://github.com/apache/spark.git
+              cd spark
+              apt-get install openjdk-1.8-jdk -y&&export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64&&export PATH=$PATH:$JAVA_HOME/bin &&echo $PATH 
+              minikube kubectl -- create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts || true
+              build/sbt -Pvolcano -Pkubernetes -Pkubernetes-integration-tests -Dspark.kubernetes.test.driverRequestCores=0.5 -Dspark.kubernetes.test.executorRequestCores=0.2 -Dspark.kubernetes.test.volcanoMaxConcurrencyJobNum=1 -Dtest.include.tags=volcano "kubernetes-integration-tests/test"
+         
