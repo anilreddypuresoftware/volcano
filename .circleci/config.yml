@@ -20,6 +20,7 @@ jobs:
     steps:
       - checkout
       - run: sudo apt-get update
+      - run: git clone https://github.com/apache/spark.git
       - run: wget https://go.dev/dl/go1.18.2.linux-arm64.tar.gz 
       - run: sudo tar -xvf go1.18.2.linux-arm64.tar.gz
       - run: export GOPATH=$HOME/go
@@ -45,10 +46,9 @@ jobs:
       - run: make TAG=latest images
       - run:
           command: |
-              apt-get install openjdk-17-jdk -y&&export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64&&export PATH=$PATH:$JAVA_HOME/bin &&echo $PATH
-              git clone https://github.com/apache/spark.git
-              minikube kubectl -- create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts || true
               cd spark
+              apt-get install openjdk-17-jdk -y&&export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64&&export PATH=$PATH:$JAVA_HOME/bin &&echo $PATH
+              minikube kubectl -- create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts || true
               build/sbt -Pvolcano -Pkubernetes -Pkubernetes-integration-tests -Dspark.kubernetes.test.driverRequestCores=0.5 -Dspark.kubernetes.test.executorRequestCores=0.2 -Dspark.kubernetes.test.volcanoMaxConcurrencyJobNum=1 -Dtest.include.tags=volcano "kubernetes-integration-tests/test"
          
          
