@@ -19,9 +19,6 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
-      
-      - restore_cache:
-         build-${{ hashFiles('**/pom.xml', 'project/build.properties', 'build/mvn', 'build/sbt', 'build/sbt-launch-lib.bash', 'build/spark-build-info') }}
       - run: git clone https://github.com/apache/spark.git
       - run: cd spark
       - run: sudo apt-get update
