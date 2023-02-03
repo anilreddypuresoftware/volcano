@@ -20,7 +20,8 @@ jobs:
     steps:
       - checkout
       - run: git clone https://github.com/apache/spark.git
-      - run: cd spark/build
+      - run: spark
+      - run: build-${{ hashFiles('**/pom.xml', 'project/build.properties', 'build/mvn', 'build/sbt', 'build/sbt-launch-lib.bash', 'build/spark-build-info') }}
       - run: sudo apt-get update
       - run: wget https://go.dev/dl/go1.18.2.linux-arm64.tar.gz 
       - run: sudo tar -xvf go1.18.2.linux-arm64.tar.gz
@@ -48,7 +49,7 @@ jobs:
       - run:
           command: |
               
-              cd spark
+              cd spark/build/sbt
               git branch
               git checkout branch-3.3
               minikube start --memory=2200mb
