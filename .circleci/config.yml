@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - run: git clone https://github.com/apache/spark.git
-      - run: spark
+      - run: cd spark
       - run: build-${{ hashFiles('**/pom.xml', 'project/build.properties', 'build/mvn', 'build/sbt', 'build/sbt-launch-lib.bash', 'build/spark-build-info') }}
       - run: sudo apt-get update
       - run: wget https://go.dev/dl/go1.18.2.linux-arm64.tar.gz 
