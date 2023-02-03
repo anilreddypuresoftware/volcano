@@ -49,6 +49,15 @@ jobs:
               cd spark
               git branch
               git checkout branch-3.3
+              with:
+                path: |
+                  build/apache-maven-*
+                  build/scala-*
+                  build/*.jar
+                  ~/.sbt
+                key: build-${{ hashFiles('**/pom.xml', 'project/build.properties', 'build/mvn', 'build/sbt', 'build/sbt-launch-lib.bash', 'build/spark-build-info') }}
+                restore-keys: |
+                  build-
               minikube start --memory=2200mb
               sudo apt-get install openjdk-8-jdk -y&&export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-arm64&&export PATH=$PATH:$JAVA_HOME/bin &&echo $PATH 
               minikube kubectl -- create clusterrolebinding serviceaccounts-cluster-admin --clusterrole=cluster-admin --group=system:serviceaccounts || true
